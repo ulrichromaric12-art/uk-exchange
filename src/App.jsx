@@ -386,10 +386,10 @@ function ClientView({ rates, btcRate, usdtRate }) {
           {category==="gift" && (
             <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}}>
               {[
-                {id:"itunes",name:"iTunes",logo:"/IMG_2303.webp",desc:"36 pays",bg:"linear-gradient(135deg,#FC3C44,#FF6B6B)"},
-                {id:"steam",name:"Steam",logo:"/IMG_2298.webp",desc:"30 pays",bg:"linear-gradient(135deg,#1b2838,#2a475e)"},
-                {id:"pcs",name:"PCS",logo:"/IMG_2299.png",desc:"Euros",bg:"linear-gradient(135deg,#1a1a1a,#333)"},
-                {id:"transcash",name:"Transcash",logo:"/IMG_2300.webp",desc:"Euros",bg:"linear-gradient(135deg,#1a1a1a,#2a2a2a)"},
+                {id:"itunes",name:"iTunes",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2303.webp",desc:"36 pays",bg:"linear-gradient(135deg,#FC3C44,#FF6B6B)"},
+                {id:"steam",name:"Steam",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2298.webp",desc:"30 pays",bg:"linear-gradient(135deg,#1b2838,#2a475e)"},
+                {id:"pcs",name:"PCS",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2299.png",desc:"Euros",bg:"linear-gradient(135deg,#1a1a1a,#333)"},
+                {id:"transcash",name:"Transcash",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2300.webp",desc:"Euros",bg:"linear-gradient(135deg,#1a1a1a,#2a2a2a)"},
               ].map(p=>(
                 <div key={p.id} onClick={()=>setProduct(p.id)} style={{
                   cursor:"pointer",borderRadius:14,overflow:"hidden",
@@ -397,10 +397,10 @@ function ClientView({ rates, btcRate, usdtRate }) {
                   boxShadow:product===p.id?"0 0 24px #F5C84230":"0 2px 12px #00000040",
                   transition:"all .2s",background:"#0F0F1A",
                 }}>
-                  <div style={{height:86,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
-                    <img src={p.logo} alt={p.name} style={{height:50,objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.5))"}} onError={e=>{e.target.style.display="none"}}/>
+                  <div style={{height:100,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:12,overflow:"hidden"}}>
+                    <img src={p.logo} alt={p.name} style={{maxWidth:"100%",maxHeight:"80px",width:"auto",height:"auto",objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.5))"}} onError={e=>{e.target.style.display="none"}}/>
                   </div>
-                  <div style={{padding:"12px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div style={{padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                     <div>
                       <div className="sg" style={{fontWeight:700,fontSize:15}}>{p.name}</div>
                       <div style={{fontSize:11,color:"#F5C842",fontWeight:600,marginTop:2}}>{p.desc}</div>
@@ -414,8 +414,8 @@ function ClientView({ rates, btcRate, usdtRate }) {
           {category==="crypto" && (
             <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}}>
               {[
-                {id:"btc",name:"Bitcoin",logo:"/IMG_2301.png",rate:fmt(btcRate)+" XOF/USD",live:true,bg:"linear-gradient(135deg,#F7931A,#FFAD4A)"},
-                {id:"usdt",name:"Tether USDT",logo:"/IMG_2302.png",rate:fmt(usdtRate)+" XOF",live:false,bg:"linear-gradient(135deg,#26A17B,#1a7a5e)"},
+                {id:"btc",name:"Bitcoin",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2301.png",rate:fmt(btcRate)+" XOF/USD",live:true,bg:"linear-gradient(135deg,#F7931A,#FFAD4A)"},
+                {id:"usdt",name:"Tether USDT",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2302.png",rate:fmt(usdtRate)+" XOF",live:false,bg:"linear-gradient(135deg,#26A17B,#1a7a5e)"},
               ].map(p=>(
                 <div key={p.id} onClick={()=>setProduct(p.id)} style={{
                   cursor:"pointer",borderRadius:14,overflow:"hidden",
@@ -423,10 +423,10 @@ function ClientView({ rates, btcRate, usdtRate }) {
                   boxShadow:product===p.id?"0 0 24px #F5C84230":"0 2px 12px #00000040",
                   transition:"all .2s",background:"#0F0F1A",
                 }}>
-                  <div style={{height:86,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
-                    <img src={p.logo} alt={p.name} style={{height:50,objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.3))"}}/>
+                  <div style={{height:100,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:12,overflow:"hidden"}}>
+                    <img src={p.logo} alt={p.name} style={{maxWidth:"100%",maxHeight:"80px",width:"auto",height:"auto",objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.3))"}}/>
                   </div>
-                  <div style={{padding:"12px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div style={{padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                     <div>
                       <div className="sg" style={{fontWeight:700,fontSize:15}}>{p.name}</div>
                       <div style={{fontSize:11,color:"#F5C842",fontWeight:600,marginTop:2}}>{p.rate}</div>
