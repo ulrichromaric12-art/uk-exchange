@@ -239,9 +239,11 @@ export default function UKExchange() {
             <div style={{width:7,height:7,borderRadius:"50%",background:"#00D26A"}} className="pulse"/>
             <span style={{fontSize:12}} className="muted">Live</span>
           </div>
-          <button className="btn btn-ghost" style={{padding:"7px 14px",fontSize:13}} onClick={()=>setView(v=>v==="client"?"admin":"client")}>
-            {view==="client"?"⚙️ Admin":"← Client"}
-          </button>
+          {view==="admin"
+  ? <button className="btn btn-ghost" style={{padding:"7px 14px",fontSize:13}} onClick={()=>setView("client")}>← Client</button>
+  : <div onDoubleClick={()=>setView("admin")} style={{width:36,height:36,cursor:"default"}}/>
+}
+
         </div>
       </nav>
 
