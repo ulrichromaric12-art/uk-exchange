@@ -385,23 +385,55 @@ function ClientView({ rates, btcRate, usdtRate }) {
           </div>
           {category==="gift" && (
             <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}}>
-              {[{id:"itunes",name:"iTunes",icon:"🎵",desc:"36 pays"},{id:"steam",name:"Steam",icon:"🎮",desc:"30 pays"},{id:"pcs",name:"PCS",icon:"💳",desc:"Euros"},{id:"transcash",name:"Transcash",icon:"💰",desc:"Euros"}].map(p=>(
-                <div key={p.id} className="card" onClick={()=>setProduct(p.id)} style={{padding:20,cursor:"pointer",textAlign:"center",border:product===p.id?"1px solid #F5C842":"1px solid #1C1C2E",background:product===p.id?"#15150A":"#0F0F1A",boxShadow:product===p.id?"0 0 20px #F5C84218":"none",transition:"all .2s"}}>
-                  <div style={{fontSize:36,marginBottom:8}}>{p.icon}</div>
-                  <div className="sg" style={{fontWeight:600,fontSize:16,marginBottom:4}}>{p.name}</div>
-                  <div style={{fontSize:12}} className="muted">{p.desc}</div>
+              {[
+                {id:"itunes",name:"iTunes",logo:"/IMG_2303.webp",desc:"36 pays",bg:"linear-gradient(135deg,#FC3C44,#FF6B6B)"},
+                {id:"steam",name:"Steam",logo:"/IMG_2298.webp",desc:"30 pays",bg:"linear-gradient(135deg,#1b2838,#2a475e)"},
+                {id:"pcs",name:"PCS",logo:"/IMG_2299.png",desc:"Euros",bg:"linear-gradient(135deg,#1a1a1a,#333)"},
+                {id:"transcash",name:"Transcash",logo:"/IMG_2300.webp",desc:"Euros",bg:"linear-gradient(135deg,#1a1a1a,#2a2a2a)"},
+              ].map(p=>(
+                <div key={p.id} onClick={()=>setProduct(p.id)} style={{
+                  cursor:"pointer",borderRadius:14,overflow:"hidden",
+                  border:product===p.id?"2px solid #F5C842":"2px solid #1C1C2E",
+                  boxShadow:product===p.id?"0 0 24px #F5C84230":"0 2px 12px #00000040",
+                  transition:"all .2s",background:"#0F0F1A",
+                }}>
+                  <div style={{height:86,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+                    <img src={p.logo} alt={p.name} style={{height:50,objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.5))"}} onError={e=>{e.target.style.display="none"}}/>
+                  </div>
+                  <div style={{padding:"12px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div>
+                      <div className="sg" style={{fontWeight:700,fontSize:15}}>{p.name}</div>
+                      <div style={{fontSize:11,color:"#F5C842",fontWeight:600,marginTop:2}}>{p.desc}</div>
+                    </div>
+                    {product===p.id && <div style={{width:8,height:8,borderRadius:"50%",background:"#F5C842"}}/>}
+                  </div>
                 </div>
               ))}
             </div>
           )}
           {category==="crypto" && (
             <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}}>
-              {[{id:"btc",name:"Bitcoin",icon:"₿",rate:fmt(btcRate)+" XOF/USD",live:true},{id:"usdt",name:"USDT",icon:"💵",rate:fmt(usdtRate)+" XOF",live:false}].map(p=>(
-                <div key={p.id} className="card" onClick={()=>setProduct(p.id)} style={{padding:24,cursor:"pointer",textAlign:"center",border:product===p.id?"1px solid #F5C842":"1px solid #1C1C2E",background:product===p.id?"#15150A":"#0F0F1A",transition:"all .2s"}}>
-                  <div style={{fontSize:40,marginBottom:8}}>{p.icon}</div>
-                  <div className="sg" style={{fontWeight:700,fontSize:18,marginBottom:4}}>{p.name}</div>
-                  <div style={{fontSize:13,fontWeight:600}} className="gold">{p.rate}</div>
-                  {p.live&&<div style={{marginTop:6,fontSize:11,color:"#00D26A"}}>● Temps réel</div>}
+              {[
+                {id:"btc",name:"Bitcoin",logo:"/IMG_2301.png",rate:fmt(btcRate)+" XOF/USD",live:true,bg:"linear-gradient(135deg,#F7931A,#FFAD4A)"},
+                {id:"usdt",name:"Tether USDT",logo:"/IMG_2302.png",rate:fmt(usdtRate)+" XOF",live:false,bg:"linear-gradient(135deg,#26A17B,#1a7a5e)"},
+              ].map(p=>(
+                <div key={p.id} onClick={()=>setProduct(p.id)} style={{
+                  cursor:"pointer",borderRadius:14,overflow:"hidden",
+                  border:product===p.id?"2px solid #F5C842":"2px solid #1C1C2E",
+                  boxShadow:product===p.id?"0 0 24px #F5C84230":"0 2px 12px #00000040",
+                  transition:"all .2s",background:"#0F0F1A",
+                }}>
+                  <div style={{height:86,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+                    <img src={p.logo} alt={p.name} style={{height:50,objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.3))"}}/>
+                  </div>
+                  <div style={{padding:"12px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div>
+                      <div className="sg" style={{fontWeight:700,fontSize:15}}>{p.name}</div>
+                      <div style={{fontSize:11,color:"#F5C842",fontWeight:600,marginTop:2}}>{p.rate}</div>
+                      {p.live&&<div style={{fontSize:10,color:"#00D26A",marginTop:2}}>● Temps réel</div>}
+                    </div>
+                    {product===p.id && <div style={{width:8,height:8,borderRadius:"50%",background:"#F5C842"}}/>}
+                  </div>
                 </div>
               ))}
             </div>
