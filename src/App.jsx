@@ -30,7 +30,6 @@ const db = {
   deleteRate: (id) => sbFetch(`rates?id=eq.${id}`, { method: "DELETE" }, true),
 };
 
-// ─── DONNÉES ────────────────────────────────────────────────────────────────
 const ITUNES_COUNTRIES = [
   { code:"US", name:"États-Unis", flag:"🇺🇸", currency:"USD", symbol:"$", denominations:[10,15,25,50,100,200] },
   { code:"GB", name:"Royaume-Uni", flag:"🇬🇧", currency:"GBP", symbol:"£", denominations:[10,15,25,50,100] },
@@ -129,7 +128,6 @@ const STEPS = ["Produit","Pays & Montant","Paiement","Confirmation"];
 const fmt = (n) => Math.round(n).toLocaleString("fr-FR");
 const genRef = () => "UKX-" + Math.random().toString(36).substring(2,10).toUpperCase();
 
-// ─── APP ────────────────────────────────────────────────────────────────────
 export default function UKExchange() {
   const [view, setView] = useState("client");
   const [rates, setRates] = useState(DEFAULT_RATES);
@@ -138,7 +136,6 @@ export default function UKExchange() {
   const [tickerOff, setTickerOff] = useState(0);
   const tickRef = useRef(null);
 
-  // Charger taux depuis Supabase
   useEffect(() => {
     db.getRates().then(rows => {
       if (!rows.length) { setRatesLoaded(true); return; }
@@ -152,7 +149,6 @@ export default function UKExchange() {
     }).catch(() => setRatesLoaded(true));
   }, []);
 
-  // Prix BTC live
   useEffect(() => {
     const fetch_ = async () => {
       try {
@@ -166,7 +162,6 @@ export default function UKExchange() {
     return () => clearInterval(iv);
   }, []);
 
-  // Ticker
   useEffect(() => {
     const iv = setInterval(() => {
       setTickerOff(p => {
@@ -229,7 +224,6 @@ export default function UKExchange() {
         .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#00D26A;color:#07070F;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;z-index:999;animation:fadeIn .3s ease}
       `}</style>
 
-      {/* NAV */}
       <nav style={{padding:"16px 24px",borderBottom:"1px solid #1C1C2E",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"#07070Fdd",backdropFilter:"blur(12px)",zIndex:100}}>
         <div className="sg" style={{fontWeight:700,fontSize:20}}>
           <span className="gold">UK</span><span>Exchange</span>
@@ -240,14 +234,12 @@ export default function UKExchange() {
             <span style={{fontSize:12}} className="muted">Live</span>
           </div>
           {view==="admin"
-  ? <button className="btn btn-ghost" style={{padding:"7px 14px",fontSize:13}} onClick={()=>setView("client")}>← Client</button>
-  : <div onDoubleClick={()=>setView("admin")} style={{width:36,height:36,cursor:"default"}}/>
-}
-
+            ? <button className="btn btn-ghost" style={{padding:"7px 14px",fontSize:13}} onClick={()=>setView("client")}>← Client</button>
+            : <div onDoubleClick={()=>setView("admin")} style={{width:36,height:36,cursor:"default"}}/>
+          }
         </div>
       </nav>
 
-      {/* TICKER */}
       <div style={{overflow:"hidden",background:"#0B0B15",borderBottom:"1px solid #1C1C2E"}}>
         <div ref={tickRef} style={{display:"flex",whiteSpace:"nowrap",transform:`translateX(${tickerOff}px)`}}>
           {[...tickerItems,...tickerItems].map((item,i)=>(
@@ -271,7 +263,6 @@ export default function UKExchange() {
   );
 }
 
-// ─── CLIENT ─────────────────────────────────────────────────────────────────
 function ClientView({ rates, btcRate, usdtRate }) {
   const [step, setStep] = useState(0);
   const [category, setCategory] = useState("gift");
@@ -349,7 +340,6 @@ function ClientView({ rates, btcRate, usdtRate }) {
 
   return (
     <div style={{maxWidth:680,margin:"0 auto",padding:"32px 16px 80px"}}>
-
       {step===0 && (
         <div style={{textAlign:"center",marginBottom:40}} className="fade-in">
           <div style={{fontSize:12,fontWeight:600,color:"#F5C842",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:12}}>Paiement immédiat · 24h/24</div>
@@ -360,7 +350,6 @@ function ClientView({ rates, btcRate, usdtRate }) {
         </div>
       )}
 
-      {/* STEPS */}
       <div style={{display:"flex",alignItems:"center",marginBottom:32}}>
         {STEPS.map((s,i)=>(
           <div key={i} style={{display:"flex",alignItems:"center",flex:i<STEPS.length-1?1:"none"}}>
@@ -375,7 +364,6 @@ function ClientView({ rates, btcRate, usdtRate }) {
         ))}
       </div>
 
-      {/* STEP 0 */}
       {step===0 && (
         <div className="fade-in">
           <div style={{display:"flex",gap:8,marginBottom:20}}>
@@ -393,12 +381,7 @@ function ClientView({ rates, btcRate, usdtRate }) {
                 {id:"pcs",name:"PCS",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2299.png",desc:"Euros",bg:"linear-gradient(135deg,#1a1a1a,#333)"},
                 {id:"transcash",name:"Transcash",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2300.webp",desc:"Euros",bg:"linear-gradient(135deg,#1a1a1a,#2a2a2a)"},
               ].map(p=>(
-                <div key={p.id} onClick={()=>setProduct(p.id)} style={{
-                  cursor:"pointer",borderRadius:14,overflow:"hidden",
-                  border:product===p.id?"2px solid #F5C842":"2px solid #1C1C2E",
-                  boxShadow:product===p.id?"0 0 24px #F5C84230":"0 2px 12px #00000040",
-                  transition:"all .2s",background:"#0F0F1A",
-                }}>
+                <div key={p.id} onClick={()=>setProduct(p.id)} style={{cursor:"pointer",borderRadius:14,overflow:"hidden",border:product===p.id?"2px solid #F5C842":"2px solid #1C1C2E",boxShadow:product===p.id?"0 0 24px #F5C84230":"0 2px 12px #00000040",transition:"all .2s",background:"#0F0F1A"}}>
                   <div style={{height:100,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:12,overflow:"hidden"}}>
                     <img src={p.logo} alt={p.name} style={{maxWidth:"100%",maxHeight:"80px",width:"auto",height:"auto",objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.5))"}} onError={e=>{e.target.style.display="none"}}/>
                   </div>
@@ -419,12 +402,7 @@ function ClientView({ rates, btcRate, usdtRate }) {
                 {id:"btc",name:"Bitcoin",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2301.png",rate:fmt(btcRate)+" XOF/USD",live:true,bg:"linear-gradient(135deg,#F7931A,#FFAD4A)"},
                 {id:"usdt",name:"Tether USDT",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2302.png",rate:fmt(usdtRate)+" XOF",live:false,bg:"linear-gradient(135deg,#26A17B,#1a7a5e)"},
               ].map(p=>(
-                <div key={p.id} onClick={()=>setProduct(p.id)} style={{
-                  cursor:"pointer",borderRadius:14,overflow:"hidden",
-                  border:product===p.id?"2px solid #F5C842":"2px solid #1C1C2E",
-                  boxShadow:product===p.id?"0 0 24px #F5C84230":"0 2px 12px #00000040",
-                  transition:"all .2s",background:"#0F0F1A",
-                }}>
+                <div key={p.id} onClick={()=>setProduct(p.id)} style={{cursor:"pointer",borderRadius:14,overflow:"hidden",border:product===p.id?"2px solid #F5C842":"2px solid #1C1C2E",boxShadow:product===p.id?"0 0 24px #F5C84230":"0 2px 12px #00000040",transition:"all .2s",background:"#0F0F1A"}}>
                   <div style={{height:100,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:12,overflow:"hidden"}}>
                     <img src={p.logo} alt={p.name} style={{maxWidth:"100%",maxHeight:"80px",width:"auto",height:"auto",objectFit:"contain",filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.3))"}}/>
                   </div>
@@ -448,13 +426,11 @@ function ClientView({ rates, btcRate, usdtRate }) {
         </div>
       )}
 
-      {/* STEP 1 */}
       {step===1 && (
         <div className="fade-in">
           <h2 className="sg" style={{fontSize:19,fontWeight:600,marginBottom:20}}>
             {product==="itunes"?"🎵 iTunes":product==="steam"?"🎮 Steam":product==="pcs"?"💳 PCS":product==="transcash"?"💰 Transcash":product==="btc"?"₿ Bitcoin":"💵 USDT"} — Montant
           </h2>
-
           {["itunes","steam"].includes(product) && (
             <div style={{marginBottom:24}}>
               <p className="muted" style={{fontSize:14,marginBottom:10}}>De quel pays est votre carte ?</p>
@@ -469,7 +445,6 @@ function ClientView({ rates, btcRate, usdtRate }) {
               </div>
             </div>
           )}
-
           {(country||["pcs","transcash"].includes(product)) && (
             <div style={{marginBottom:20}}>
               <p className="muted" style={{fontSize:14,marginBottom:10}}>Valeur de la carte</p>
@@ -480,14 +455,12 @@ function ClientView({ rates, btcRate, usdtRate }) {
               </div>
             </div>
           )}
-
           {["btc","usdt"].includes(product) && (
             <div style={{marginBottom:20}}>
               <label style={{fontSize:14,display:"block",marginBottom:8}} className="muted">Montant en {product==="btc"?"USD":"USDT"}</label>
               <input className="input" type="number" placeholder="Ex: 100" value={cryptoAmt} onChange={e=>setCryptoAmt(e.target.value)}/>
             </div>
           )}
-
           {payout()>0 && (
             <div className="card" style={{padding:18,background:"#0A0A14",marginTop:8}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
@@ -504,7 +477,6 @@ function ClientView({ rates, btcRate, usdtRate }) {
         </div>
       )}
 
-      {/* STEP 2 */}
       {step===2 && (
         <div className="fade-in">
           <h2 className="sg" style={{fontSize:19,fontWeight:600,marginBottom:20}}>Recevoir votre paiement</h2>
@@ -550,7 +522,6 @@ function ClientView({ rates, btcRate, usdtRate }) {
         </div>
       )}
 
-      {/* STEP 3 */}
       {step===3 && (
         <div className="fade-in" style={{textAlign:"center",padding:"20px 0"}}>
           <div style={{width:80,height:80,borderRadius:"50%",background:"#00D26A18",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px",fontSize:36}}>✅</div>
@@ -583,7 +554,6 @@ function ClientView({ rates, btcRate, usdtRate }) {
   );
 }
 
-// ─── ADMIN ──────────────────────────────────────────────────────────────────
 function AdminView({ rates, setRates }) {
   const [auth, setAuth] = useState(false);
   const [pass, setPass] = useState("");
@@ -656,7 +626,6 @@ function AdminView({ rates, setRates }) {
       <p className="muted" style={{fontSize:14,marginBottom:24}}>Entrez le mot de passe admin.</p>
       <input className="input" type="password" placeholder="Mot de passe" value={pass} onChange={e=>setPass(e.target.value)} style={{marginBottom:14}} onKeyDown={e=>e.key==="Enter"&&pass==="ukexchange2024"&&setAuth(true)}/>
       <button className="btn btn-gold" style={{width:"100%",padding:"12px",fontSize:15}} onClick={()=>pass==="ukexchange2024"&&setAuth(true)}>Connexion</button>
-      <p style={{fontSize:11,marginTop:12}} className="muted">Mot de passe : ukexchange2024</p>
     </div>
   );
 
@@ -676,8 +645,6 @@ function AdminView({ rates, setRates }) {
   return (
     <div style={{maxWidth:900,margin:"0 auto",padding:"28px 16px 60px"}}>
       {toast && <div className="toast">{toast}</div>}
-
-      {/* STATS */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:28}}>
         {[["Total txns",txns.length,"#F5C842"],["En attente",pending,"#FF9500"],["Validées",done,"#00D26A"],["Volume",fmt(totalVol)+" XOF","#A78BFA"]].map(([l,v,c])=>(
           <div key={l} className="card" style={{padding:"14px 16px",textAlign:"center"}}>
@@ -686,15 +653,11 @@ function AdminView({ rates, setRates }) {
           </div>
         ))}
       </div>
-
-      {/* TABS */}
       <div style={{display:"flex",gap:8,marginBottom:24}}>
         {[["txns","📋 Transactions"],["rates","📊 Taux"]].map(([t,l])=>(
           <button key={t} className="tab" onClick={()=>setTab(t)} style={{background:tab===t?"#F5C842":"#0F0F1A",color:tab===t?"#07070F":"#888",border:tab===t?"none":"1px solid #1C1C2E"}}>{l}</button>
         ))}
       </div>
-
-      {/* TRANSACTIONS */}
       {tab==="txns" && (
         <div className="fade-in">
           <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap",alignItems:"center"}}>
@@ -743,8 +706,6 @@ function AdminView({ rates, setRates }) {
           </div>}
         </div>
       )}
-
-      {/* TAUX */}
       {tab==="rates" && (
         <div className="fade-in">
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:12}}>
@@ -753,14 +714,11 @@ function AdminView({ rates, setRates }) {
               {saving?"Sauvegarde...":"💾 Sauvegarder tout"}
             </button>
           </div>
-
-          {/* Tabs produits */}
           <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
             {[["itunes","🎵 iTunes"],["steam","🎮 Steam"],["pcs","💳 PCS"],["transcash","💰 Transcash"],["crypto","₿ Crypto"]].map(([t,l])=>(
               <button key={t} className="chip" style={rateProduct===t?{background:"#F5C842",color:"#07070F",borderColor:"#F5C842"}:{}} onClick={()=>setRateProduct(t)}>{l}</button>
             ))}
           </div>
-
           {["itunes","steam"].includes(rateProduct) && (
             <div className="card" style={{padding:20}}>
               <div className="sg" style={{fontWeight:600,marginBottom:14}}>{rateProduct==="itunes"?"🎵 iTunes":"🎮 Steam"} — XOF / 1 unité devise</div>
@@ -778,14 +736,12 @@ function AdminView({ rates, setRates }) {
               </div>
             </div>
           )}
-
           {(rateProduct==="pcs"||rateProduct==="transcash") && (
             <div className="card" style={{padding:20}}>
               <div className="sg" style={{fontWeight:600,marginBottom:16}}>{rateProduct==="pcs"?"💳 PCS":"💰 Transcash"} — XOF / €1</div>
               <input className="input" type="number" value={localRates[rateProduct]?.EUR??""} onChange={e=>updateRate(rateProduct,"EUR",e.target.value)} style={{maxWidth:250}}/>
             </div>
           )}
-
           {rateProduct==="crypto" && (
             <div className="card" style={{padding:20}}>
               <div className="sg" style={{fontWeight:600,marginBottom:16}}>₿ Cryptomonnaies — Taux de référence</div>
