@@ -26,7 +26,7 @@ const db = {
   insertTxn: (t) => sbFetch("transactions", { method: "POST", body: JSON.stringify(t) }),
   updateTxnStatus: (ref, status) => sbFetch(`transactions?ref=eq.${ref}`, { method: "PATCH", body: JSON.stringify({ status }), prefer: "return=minimal" }, true),
   getRates: () => sbFetch("rates?order=product.asc", {}, true),
-  upsertRate: (r) => sbFetch("rates", { method: "POST", body: JSON.stringify(r), headers: { "Prefer": "resolution=merge-duplicates,return=representation" } }, true),
+  upsertRate: (r) => sbFetch("rates", { method: "POST", body: JSON.stringify(r), headers: { "Prefer": "resolution=merge-duplicates,return=minimal" } }, true),
   deleteRate: (id) => sbFetch(`rates?id=eq.${id}`, { method: "DELETE" }, true),
 };
 
@@ -108,12 +108,15 @@ const OTHER_PRODUCTS = [
 ];
 
 const DEFAULT_RATES = {
-  itunes:{ US:540, GB:680, EU:620, CA:400, AU:350, JP:4.2, FR:620, DE:620, IT:620, ES:620, BR:90, MX:27, IN:6.2, SA:142, AE:148, TR:18, RU:5.8, KR:0.42, HK:79, SG:470, NZ:320, CH:700, SE:52, NO:52, DK:68, ZA:30, NG:0.35, EG:11, PH:9.2, TH:15, MY:130, ID:0.034, PL:135, NL:620, BE:620, PT:620 },
-  steam:{ US:530, EU:610, GB:670, BR:88, TR:16, CA:390, AU:340, IN:6, AR:1.1, MX:25, RU:5.5, JP:4, KR:0.40, HK:78, SG:460, MY:125, TH:14, ID:0.032, PH:9, PL:132, UA:12, CL:0.55, CO:0.13, PE:160, IL:155, ZA:28, AE:145, SA:140, NZ:310, CH:690 },
-  pcs:{ EUR:600 },
-  transcash:{ EUR:590 },
-  btc:98500,
-  usdt:620,
+  itunes:{ US:400, GB:400, EU:400, CA:400, AU:400, JP:400, FR:400, DE:400, IT:400, ES:400, BR:400, MX:400, IN:400, SA:400, AE:400, TR:400, RU:400, KR:400, HK:400, SG:400, NZ:400, CH:400, SE:400, NO:400, DK:400, ZA:400, NG:400, EG:400, PH:400, TH:400, MY:400, ID:400, PL:400, NL:400, BE:400, PT:400 },
+  steam:{ US:300, EU:400, GB:400, BR:300, TR:300, CA:300, AU:300, IN:300, AR:300, MX:300, RU:300, JP:300, KR:300, HK:300, SG:300, MY:300, TH:300, ID:300, PH:300, PL:300, UA:300, CL:300, CO:300, PE:300, IL:300, ZA:300, AE:300, SA:300, NZ:300, CH:300 },
+  pcs:{ EUR:520 },
+  transcash:{ EUR:560 },
+  btc:300,
+  usdt:550,
+  eth:750000,
+  sol:28000,
+  doge:30,
 };
 
 const PAYMENT_METHODS = [
@@ -179,6 +182,9 @@ export default function UKExchange() {
   const tickerItems = [
     { label:"BTC/XOF", val:`${fmt(btcRate)} XOF`, live:!!cryptoPrices.btc },
     { label:"USDT/XOF", val:`${fmt(usdtRate)} XOF` },
+    { label:"ETH/XOF", val:`${fmt(rates.eth||750000)} XOF/ETH` },
+    { label:"SOL/XOF", val:`${fmt(rates.sol||28000)} XOF/SOL` },
+    { label:"DOGE/XOF", val:`${fmt(rates.doge||30)} XOF/DOGE` },
     { label:"iTunes US $100", val:`${fmt((rates.itunes?.US||540)*100)} XOF` },
     { label:"iTunes EU €50", val:`${fmt((rates.itunes?.EU||620)*50)} XOF` },
     { label:"iTunes GB £50", val:`${fmt((rates.itunes?.GB||680)*50)} XOF` },
@@ -284,6 +290,9 @@ function ClientView({ rates, btcRate, usdtRate }) {
   const getRate = () => {
     if (product==="btc") return btcRate;
     if (product==="usdt") return usdtRate;
+    if (product==="eth") return rates.eth||750000;
+    if (product==="sol") return rates.sol||28000;
+    if (product==="doge") return rates.doge||30;
     if (product==="pcs") return rates.pcs?.EUR||600;
     if (product==="transcash") return rates.transcash?.EUR||590;
     if (country) return rates[product]?.[country.code]||500;
@@ -292,7 +301,7 @@ function ClientView({ rates, btcRate, usdtRate }) {
 
   const payout = () => {
     const r = getRate();
-    if (["btc","usdt"].includes(product)) return Math.round(parseFloat(cryptoAmt||0)*r);
+    if (["btc","usdt","eth","sol","doge"].includes(product)) return Math.round(parseFloat(cryptoAmt||0)*r);
     return denom ? Math.round(denom*r) : 0;
   };
 
@@ -301,9 +310,9 @@ function ClientView({ rates, btcRate, usdtRate }) {
     if (step===1) {
       if (["itunes","steam"].includes(product)) return !!country && !!denom;
       if (["pcs","transcash"].includes(product)) return !!denom;
-      if (["btc","usdt"].includes(product)) return parseFloat(cryptoAmt)>0;
+      if (["btc","usdt","eth","sol","doge"].includes(product)) return parseFloat(cryptoAmt)>0;
     }
-    if (step===2) return !!payMethod && contact.length>=8 && (["btc","usdt"].includes(product)||cardCode.length>=6);
+    if (step===2) return !!payMethod && contact.length>=8 && (["btc","usdt","eth","sol","doge"].includes(product)||cardCode.length>=6);
     return true;
   };
 
@@ -315,7 +324,7 @@ function ClientView({ rates, btcRate, usdtRate }) {
         ref, product,
         country: country?.name||null,
         denomination: denom||null,
-        crypto_amount: ["btc","usdt"].includes(product) ? parseFloat(cryptoAmt) : null,
+        crypto_amount: ["btc","usdt","eth","sol","doge"].includes(product) ? parseFloat(cryptoAmt) : null,
         payout: payout(),
         pay_method: payMethod.name,
         contact,
@@ -401,6 +410,9 @@ function ClientView({ rates, btcRate, usdtRate }) {
               {[
                 {id:"btc",name:"Bitcoin",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2301.png",rate:fmt(btcRate)+" XOF/USD",live:true,bg:"linear-gradient(135deg,#F7931A,#FFAD4A)"},
                 {id:"usdt",name:"Tether USDT",logo:"https://raw.githubusercontent.com/ulrichromaric12-art/uk-exchange/main/IMG_2302.png",rate:fmt(usdtRate)+" XOF",live:false,bg:"linear-gradient(135deg,#26A17B,#1a7a5e)"},
+                {id:"eth",name:"Ethereum",logo:"https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg",rate:fmt(rates.eth||750000)+" XOF/ETH",live:false,bg:"linear-gradient(135deg,#627EEA,#3C5CE4)"},
+                {id:"sol",name:"Solana",logo:"https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png",rate:fmt(rates.sol||28000)+" XOF/SOL",live:false,bg:"linear-gradient(135deg,#9945FF,#14F195)"},
+                {id:"doge",name:"Dogecoin",logo:"https://upload.wikimedia.org/wikipedia/en/d/d0/Dogecoin_Logo.png",rate:fmt(rates.doge||30)+" XOF/DOGE",live:false,bg:"linear-gradient(135deg,#C2A633,#F0C24B)"},
               ].map(p=>(
                 <div key={p.id} onClick={()=>setProduct(p.id)} style={{cursor:"pointer",borderRadius:14,overflow:"hidden",border:product===p.id?"2px solid #F5C842":"2px solid #1C1C2E",boxShadow:product===p.id?"0 0 24px #F5C84230":"0 2px 12px #00000040",transition:"all .2s",background:"#0F0F1A"}}>
                   <div style={{height:100,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:12,overflow:"hidden"}}>
@@ -455,9 +467,9 @@ function ClientView({ rates, btcRate, usdtRate }) {
               </div>
             </div>
           )}
-          {["btc","usdt"].includes(product) && (
+          {["btc","usdt","eth","sol","doge"].includes(product) && (
             <div style={{marginBottom:20}}>
-              <label style={{fontSize:14,display:"block",marginBottom:8}} className="muted">Montant en {product==="btc"?"USD":"USDT"}</label>
+              <label style={{fontSize:14,display:"block",marginBottom:8}} className="muted">Montant en {product==="btc"?"USD":product==="eth"?"ETH":product==="sol"?"SOL":product==="doge"?"DOGE":"USDT"}</label>
               <input className="input" type="number" placeholder="Ex: 100" value={cryptoAmt} onChange={e=>setCryptoAmt(e.target.value)}/>
             </div>
           )}
@@ -465,7 +477,7 @@ function ClientView({ rates, btcRate, usdtRate }) {
             <div className="card" style={{padding:18,background:"#0A0A14",marginTop:8}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
                 <span style={{fontSize:13}} className="muted">Taux</span>
-                <span style={{fontSize:13,fontWeight:600}}>{fmt(getRate())} XOF / {["btc","usdt"].includes(product)?(product==="btc"?"USD":"USDT"):`${sym}1`}</span>
+                <span style={{fontSize:13,fontWeight:600}}>{fmt(getRate())} XOF / {["btc","usdt","eth","sol","doge"].includes(product)?(product==="btc"?"USD":"USDT"):`${sym}1`}</span>
               </div>
               <div style={{height:1,background:"#1C1C2E",margin:"12px 0"}}/>
               <div style={{display:"flex",justifyContent:"space-between"}}>
@@ -495,21 +507,21 @@ function ClientView({ rates, btcRate, usdtRate }) {
                 <label style={{fontSize:13,display:"block",marginBottom:7}} className="muted">{payMethod.id==="paypal"?"Email PayPal":"Numéro de téléphone"}</label>
                 <input className="input" placeholder={payMethod.id==="paypal"?"email@exemple.com":"+225 07 XX XX XX XX"} value={contact} onChange={e=>setContact(e.target.value)}/>
               </div>
-              {!["btc","usdt"].includes(product) && (
+              {!["btc","usdt","eth","sol","doge"].includes(product) && (
                 <div>
                   <label style={{fontSize:13,display:"block",marginBottom:7}} className="muted">Code de la carte</label>
                   <input className="input" placeholder="XXXX-XXXX-XXXX-XXXX" value={cardCode} onChange={e=>setCardCode(e.target.value)}/>
                   <p style={{fontSize:12,marginTop:6}} className="muted">Ne partagez ce code qu'ici uniquement.</p>
                 </div>
               )}
-              {["btc","usdt"].includes(product) && (
+              {["btc","usdt","eth","sol","doge"].includes(product) && (
                 <div style={{background:"#0A150A",border:"1px solid #00D26A22",borderRadius:8,padding:14}}>
                   <p style={{fontSize:13,color:"#00D26A"}}>📤 Après validation, vous recevrez l'adresse wallet pour envoyer vos cryptos.</p>
                 </div>
               )}
               <div className="card" style={{padding:18,background:"#0A0A14"}}>
                 <div style={{fontSize:12,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:14}} className="muted">Récapitulatif</div>
-                {[["Produit",product?.toUpperCase()],["Pays",country?.name||"—"],["Montant",["btc","usdt"].includes(product)?`${cryptoAmt} ${product.toUpperCase()}`:`${sym}${denom}`],["Via",payMethod.name],["Vous recevez",`${fmt(payout())} XOF`]].map(([k,v],i)=>(
+                {[["Produit",product?.toUpperCase()],["Pays",country?.name||"—"],["Montant",["btc","usdt","eth","sol","doge"].includes(product)?`${cryptoAmt} ${product.toUpperCase()}`:`${sym}${denom}`],["Via",payMethod.name],["Vous recevez",`${fmt(payout())} XOF`]].map(([k,v],i)=>(
                   <div key={i} className="summary-row" style={i===4?{borderBottom:"none"}:{}}>
                     <span style={{fontSize:13}} className="muted">{k}</span>
                     <span style={{fontSize:i===4?16:13,fontWeight:i===4?700:500,color:i===4?"#F5C842":"#EDEAE4"}}>{v}</span>
